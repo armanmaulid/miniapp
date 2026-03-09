@@ -1,0 +1,24 @@
+.bottom-nav {
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 7px 0 max(12px, env(safe-area-inset-bottom));
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+}
+.nav-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 3px 0;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-pip {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--green);
+  position: absolute; top: 0; left: 50%; transform: translateX(6px);
+}
+.nav-icon  { font-size: 18px; transition: transform .15s; }
+.nav-label { font-size: 9.5px; font-weight: 500; color: var(--muted); transition: color .15s; }
+.nav-item.active .nav-label { color: var(--green); }
+.nav-item.active .nav-icon  { transform: scale(1.1); }

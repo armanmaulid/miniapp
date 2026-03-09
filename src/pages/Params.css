@@ -1,0 +1,29 @@
+.params-wrap { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.pg { overflow: hidden; }
+.pg-hdr {
+  padding: 9px 13px; background: var(--card2);
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.pr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 13px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .1s;
+}
+.pr:last-child { border-bottom: none; }
+.pr:active:not(.pr-ro) { background: var(--card2); }
+.pr-ro { cursor: default; }
+.pr-lbl { font-size: 13px; color: var(--text); }
+.pr-val {
+  font-size: 12.5px; font-weight: 600; font-family: var(--font-mono);
+  color: var(--white); background: var(--card2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 5px 10px;
+  display: flex; align-items: center; gap: 5px;
+  transition: border-color .15s;
+}
+.pr-val.a { color: var(--amber); }
+.pr-val.g { color: var(--green); }
+.pr-val-ro { cursor: default; color: var(--muted); background: transparent; border-color: transparent; }
+.edit-ico  { font-size: 9px; color: var(--muted); }

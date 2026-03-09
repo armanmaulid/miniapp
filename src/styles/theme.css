@@ -1,0 +1,192 @@
+/* ══════════════════════════════════════════════════════════
+   iOT EA Mini App — Design Tokens & Global Styles
+══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600;700&display=swap');
+
+/* ── Tokens ─────────────────────────────────────────────── */
+:root {
+  --green:      #00e87a;
+  --green-dim:  rgba(0, 232, 122, 0.12);
+  --green-bord: rgba(0, 232, 122, 0.25);
+  --red:        #ff3b5c;
+  --red-dim:    rgba(255, 59, 92, 0.12);
+  --red-bord:   rgba(255, 59, 92, 0.25);
+  --amber:      #ffb020;
+  --amber-dim:  rgba(255, 176, 32, 0.12);
+  --amber-bord: rgba(255, 176, 32, 0.25);
+  --blue:       #38b6ff;
+  --blue-dim:   rgba(56, 182, 255, 0.10);
+  --blue-bord:  rgba(56, 182, 255, 0.25);
+
+  --radius:    14px;
+  --radius-sm:  9px;
+  --radius-xs:  6px;
+
+  --font-body: 'Sora', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+
+  --transition: 0.2s ease;
+}
+
+/* ── Dark Theme (default) ───────────────────────────────── */
+[data-theme="dark"], :root {
+  --bg:       #080c10;
+  --surface:  #0d1520;
+  --card:     #111d2b;
+  --card2:    #152233;
+  --border:   #1e3045;
+  --border2:  #264060;
+  --text:     #c8d8e8;
+  --muted:    #4a6580;
+  --muted2:   #2e4560;
+  --white:    #f0f8ff;
+  --shadow:   rgba(0, 0, 0, 0.5);
+}
+
+/* ── Light Theme ─────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:       #f0f4f8;
+  --surface:  #ffffff;
+  --card:     #ffffff;
+  --card2:    #f4f7fa;
+  --border:   #dde5ee;
+  --border2:  #c0cede;
+  --text:     #2a3a4a;
+  --muted:    #7090a8;
+  --muted2:   #a8bece;
+  --white:    #0a1a2a;
+  --shadow:   rgba(0, 0, 0, 0.10);
+}
+
+/* ── Global Reset ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition), color var(--transition);
+}
+
+button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
+input  { font-family: var(--font-mono); outline: none; border: none; }
+a      { text-decoration: none; color: inherit; }
+
+/* ── Scrollbar hidden ──────────────────────────────────────── */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* ── Utility ────────────────────────────────────────────────── */
+.mono    { font-family: var(--font-mono); }
+.muted   { color: var(--muted); }
+.white   { color: var(--white); }
+.green   { color: var(--green); }
+.red     { color: var(--red); }
+.amber   { color: var(--amber); }
+.blue    { color: var(--blue); }
+
+.up   { color: var(--green); }
+.down { color: var(--red); }
+.flat { color: var(--muted); }
+
+/* ── Card base ─────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: background var(--transition), border-color var(--transition);
+}
+.card-sm { border-radius: var(--radius-sm); }
+
+/* ── Pill badge ────────────────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.pill-green  { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-bord); }
+.pill-red    { background: var(--red-dim);   color: var(--red);   border: 1px solid var(--red-bord);   }
+.pill-amber  { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber-bord); }
+.pill-blue   { background: var(--blue-dim);  color: var(--blue);  border: 1px solid var(--blue-bord);  }
+.pill-muted  { background: var(--card2);     color: var(--muted); border: 1px solid var(--border);     }
+
+/* ── Section title ─────────────────────────────────────────── */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  padding: 0 16px 8px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Pulsing dot animation ─────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.pulse { animation: pulse 2s infinite; }
+.pulse-fast { animation: pulse 0.8s infinite; }
+
+/* ── Page fade-in ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.18s ease; }
+
+/* ── Toggle switch ─────────────────────────────────────────── */
+.sw {
+  position: relative;
+  width: 46px;
+  height: 25px;
+  border-radius: 13px;
+  background: var(--border2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.sw.on { background: var(--green); border-color: var(--green); }
+.sw::after {
+  content: '';
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.sw.on::after { transform: translateX(21px); }

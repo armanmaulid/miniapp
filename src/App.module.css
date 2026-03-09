@@ -1,0 +1,20 @@
+.app     { display:flex;flex-direction:column;height:100%;overflow:hidden;
+           background:var(--bg);transition:background .25s; }
+
+/* Topbar */
+.topbar  { display:flex;align-items:center;gap:9px;padding:11px 14px 9px;
+           background:var(--surface);border-bottom:1px solid var(--border);
+           flex-shrink:0;transition:background .25s; }
+.avatar  { width:32px;height:32px;border-radius:50%;flex-shrink:0;
+           background:linear-gradient(135deg,#00e87a,#0099cc);
+           display:flex;align-items:center;justify-content:center;font-size:14px; }
+.topInfo { flex:1; }
+.topName { font-size:13.5px;font-weight:600;color:var(--white);transition:color .25s; }
+.topSub  { font-size:10px;color:var(--muted); }
+.themeBtn { width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
+            background:var(--card2);font-size:15px;display:flex;align-items:center;
+            justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s; }
+
+/* Page area */
+.pageWrap { flex:1;overflow:hidden;position:relative; }
+.page     { position:absolute;inset:0;overflow-y:auto;overflow-x:hidden; }

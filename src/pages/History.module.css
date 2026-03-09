@@ -1,0 +1,40 @@
+.page    { display:flex;flex-direction:column; }
+.header  { padding:12px 16px 8px;display:flex;justify-content:space-between;align-items:center; }
+.title   { font-size:20px;font-weight:700;color:var(--white); }
+.sub     { font-size:11px;color:var(--muted);margin-top:1px; }
+.periods { display:flex;gap:5px;padding:0 16px 10px; }
+.pBtn    { flex:1;padding:7px 4px;border-radius:8px;border:1px solid var(--border);
+           background:var(--card2);font-size:11px;font-weight:600;color:var(--muted);
+           cursor:pointer;transition:all .15s; }
+.pActive { background:var(--green-dim);color:var(--green);border-color:var(--green-bord); }
+
+.wrCard { margin:0 16px 10px;padding:14px; }
+.wrTop  { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px; }
+.wrPct  { font-size:26px;font-weight:700;font-family:var(--font-mono);color:var(--green); }
+.wrWL   { display:flex;gap:10px; }
+.wins   { font-size:12px;font-family:var(--font-mono);color:var(--green); }
+.loss   { font-size:12px;font-family:var(--font-mono);color:var(--red); }
+.wrBar  { height:5px;background:var(--red-dim);border-radius:3px;overflow:hidden;margin-bottom:10px; }
+.wrFill { height:100%;background:var(--green);border-radius:3px;transition:width .4s; }
+.wrStats { display:grid;grid-template-columns:repeat(4,1fr);gap:4px; }
+.wrStLbl { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px; }
+.wrStVal { font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--white); }
+
+.grid2   { display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 10px; }
+.g2card  { padding:11px; }
+.g2lbl   { font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px; }
+.g2val   { font-size:17px;font-weight:700;font-family:var(--font-mono); }
+.g2sub   { font-size:9px;color:var(--muted);margin-top:2px;font-family:var(--font-mono); }
+
+.tlist    { display:flex;flex-direction:column;gap:5px;padding:0 16px 20px; }
+.noTrades { text-align:center;color:var(--muted);font-size:12px;padding:20px; }
+.titem    { padding:10px 12px;display:flex;align-items:center;gap:9px; }
+.tdir     { width:31px;height:31px;border-radius:8px;flex-shrink:0;display:flex;
+            align-items:center;justify-content:center;font-size:11px;font-weight:700;
+            font-family:var(--font-mono); }
+.tbuy  { background:var(--green-dim);color:var(--green);border:1px solid var(--green-bord); }
+.tsell { background:var(--red-dim);  color:var(--red);  border:1px solid var(--red-bord); }
+.tinfo { flex:1; }
+.tpair { font-size:12px;font-weight:600;color:var(--white);font-family:var(--font-mono); }
+.tmeta { font-size:10px;color:var(--muted); }
+.tpnl  { font-size:14px;font-weight:700;font-family:var(--font-mono); }

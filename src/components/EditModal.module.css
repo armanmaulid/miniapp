@@ -1,0 +1,22 @@
+.overlay { position:absolute;inset:0;background:rgba(0,0,0,.65);
+           z-index:100;display:flex;align-items:flex-end;backdrop-filter:blur(4px);
+           animation:show .18s ease; }
+@keyframes show { from{opacity:0} to{opacity:1} }
+.sheet   { background:var(--card);border:1px solid var(--border);
+           border-radius:20px 20px 0 0;padding:18px 18px 30px;width:100%;
+           transition:background .25s; }
+.handle  { width:34px;height:4px;background:var(--border2);border-radius:2px;
+           margin:0 auto 14px; }
+.title   { font-size:17px;font-weight:700;color:var(--white);margin-bottom:2px; }
+.sub     { font-size:11.5px;color:var(--muted);margin-bottom:14px; }
+.input   { width:100%;background:var(--surface);border:1.5px solid var(--border2);
+           border-radius:10px;padding:12px 14px;color:var(--white);
+           font-size:20px;font-weight:600;text-align:center;margin-bottom:10px;
+           transition:border-color .15s; }
+.input:focus { border-color:var(--green); }
+.btns    { display:grid;grid-template-columns:1fr 1fr;gap:7px; }
+.btn     { padding:11px;border-radius:9px;font-size:13.5px;font-weight:600;
+           transition:transform .15s; }
+.btn:active { transform:scale(.96); }
+.cancel  { background:var(--card2);color:var(--muted); }
+.confirm { background:var(--green);color:#000; }
