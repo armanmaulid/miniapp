@@ -38,3 +38,21 @@
 .tpair { font-size:12px;font-weight:600;color:var(--white);font-family:var(--font-mono); }
 .tmeta { font-size:10px;color:var(--muted); }
 .tpnl  { font-size:14px;font-weight:700;font-family:var(--font-mono); }
+
+/* #8 Export button */
+.exportBtn {
+  align-self: center;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: color 0.15s, border-color 0.15s;
+}
+.exportBtn:hover { color: var(--text); border-color: var(--text); }
+
+/* fix header to row */
+.header { display: flex; justify-content: space-between; align-items: flex-start; }

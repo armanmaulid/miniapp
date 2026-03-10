@@ -6,21 +6,23 @@
 import { createContext, useContext, useReducer, useEffect, useRef, useCallback } from 'react';
 import { fetchInstances, fetchStatus, fetchHistory, sendCommand } from '../api.js';
 
+const CMD_TIMEOUT_MS = 15_000; // 15 detik — EA harus merespons dalam waktu ini
+
 // ── Initial state ────────────────────────────────────────────────────
 const INIT = {
-  instances:   [],        // InstanceInfo[]
-  states:      {},        // { [magic:symbol]: EAState }
-  histories:   {},        // { [magic:symbol]: TradeHistory[] }
-  eqHistories: {},        // { [magic:symbol]: EquityPoint[] }
-  activePair:  null,      // "magic:symbol" string
-  theme:       'dark',
-  toast:       null,      // { msg, key }
+  instances:      [],   // InstanceInfo[]
+  states:         {},   // { [magic:symbol]: EAState }
+  histories:      {},   // { [magic:symbol]: TradeHistory[] }
+  eqHistories:    {},   // { [magic:symbol]: EquityPoint[] }
+  activePair:     null, // "magic:symbol" string
+  theme:          'dark',
+  toast:          null, // { msg, key }
+  cmdPending:     false, // true saat command sedang dikirim
 };
 
 // ── Reducer ─────────────────────────────────────────────────────────
 function reducer(state, action) {
   switch (action.type) {
-
     case 'SET_INSTANCES':
       return { ...state, instances: action.payload };
 
@@ -48,6 +50,9 @@ function reducer(state, action) {
 
     case 'TOAST':
       return { ...state, toast: { msg: action.payload, key: Date.now() } };
+
+    case 'SET_CMD_PENDING':
+      return { ...state, cmdPending: action.payload };
 
     // Optimistic updates — immediately reflect toggle/param changes in UI
     case 'OPTIMISTIC_UPDATE': {
@@ -78,7 +83,6 @@ export function AppProvider({ children }) {
     try {
       const { instances } = await fetchInstances();
       dispatch({ type: 'SET_INSTANCES', payload: instances });
-      // Auto-select first instance if none active
       if (!state.activePair && instances.length > 0) {
         const first = instances[0];
         dispatch({ type: 'SET_ACTIVE_PAIR', payload: pairId(first.magic, first.symbol) });
@@ -92,7 +96,7 @@ export function AppProvider({ children }) {
   const pollActive = useCallback(async () => {
     if (!state.activePair) return;
     const [magic, ...rest] = state.activePair.split(':');
-    const symbol = rest.join(':'); // handle symbols with ':'
+    const symbol = rest.join(':');
     try {
       const res = await fetchStatus(magic, symbol, true);
       if (res.ok && res.state) {
@@ -157,31 +161,50 @@ export function AppProvider({ children }) {
       dispatch({ type: 'TOAST', payload: msg });
     },
 
+    // ── command() — dengan timeout 15 detik ────────────────────────────
+    // Returns: 'ok' | 'timeout' | 'error'
     async command(action, param = null, value = null) {
-      if (!state.activePair) return;
+      if (!state.activePair) return 'error';
       const [magic, ...rest] = state.activePair.split(':');
       const symbol = rest.join(':');
 
-      // Optimistic UI update
+      // Optimistic UI update (langsung, sebelum command dikirim)
       const patch = getOptimisticPatch(action, param, value);
       if (Object.keys(patch).length > 0) {
         dispatch({ type: 'OPTIMISTIC_UPDATE', payload: { id: state.activePair, patch } });
       }
 
+      dispatch({ type: 'SET_CMD_PENDING', payload: true });
+
+      // Race: sendCommand vs timeout 15s
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), CMD_TIMEOUT_MS)
+      );
+
       try {
-        await sendCommand(Number(magic), symbol, action, param, value);
-        actions.toast(`✓ ${param || action} → ${value || ''}`);
+        await Promise.race([
+          sendCommand(Number(magic), symbol, action, param, value),
+          timeoutPromise,
+        ]);
+        dispatch({ type: 'SET_CMD_PENDING', payload: false });
+        actions.toast(`✓ ${param || action}${value ? ' → ' + value : ''}`);
+        return 'ok';
       } catch (e) {
-        actions.toast('⚠ Command failed');
-        console.error('sendCommand:', e);
+        dispatch({ type: 'SET_CMD_PENDING', payload: false });
+        if (e.message === 'TIMEOUT') {
+          actions.toast('⏱ EA tidak merespons (timeout 15s)');
+          return 'timeout';
+        }
+        actions.toast('⚠ Command gagal — ' + e.message);
+        return 'error';
       }
     },
   };
 
   // Computed helpers
-  const activeState = state.activePair ? state.states[state.activePair] : null;
+  const activeState   = state.activePair ? state.states[state.activePair]    : null;
   const activeHistory = state.activePair ? (state.histories[state.activePair] || []) : [];
-  const activeEq = state.activePair ? (state.eqHistories[state.activePair] || []) : [];
+  const activeEq      = state.activePair ? (state.eqHistories[state.activePair] || []) : [];
 
   return (
     <AppCtx.Provider value={{ state, activeState, activeHistory, activeEq, actions }}>
@@ -201,17 +224,10 @@ function getOptimisticPatch(action, param, value) {
     case 'news_off':  return { newsFilterOn: false };
     case 'set_param': {
       const map = {
-        risk:       'riskPercent',
-        tp:         'tpPoints',
-        sl:         'slPoints',
-        tsl:        'tslPoints',
-        tsltrig:    'tslTrigger',
-        orderdist:  'orderDist',
-        barsn:      'barsN',
-        starthour:  'startHour',
-        endhour:    'endHour',
-        stopbefore: 'stopBeforeMin',
-        startafter: 'startAfterMin',
+        risk: 'riskPercent', tp: 'tpPoints', sl: 'slPoints',
+        tsl: 'tslPoints', tsltrig: 'tslTrigger', orderdist: 'orderDist',
+        barsn: 'barsN', starthour: 'startHour', endhour: 'endHour',
+        stopbefore: 'stopBeforeMin', startafter: 'startAfterMin',
         currencies: 'keyCurrencies',
       };
       const key = map[param];

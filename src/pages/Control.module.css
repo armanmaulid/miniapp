@@ -33,3 +33,19 @@
 .qLabel { font-size:12px;font-weight:600;color:var(--white); }
 .qSub   { font-size:10px;color:var(--muted); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+.busy { opacity: 0.6; cursor: not-allowed; }
+.spinner { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.swBusy { opacity: 0.5; pointer-events: none; }
+
+.offlineWarn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--amber);
+  background: rgba(255,170,0,0.06);
+}
+.offlineTitle { font-size: 13px; font-weight: 600; color: var(--amber); }
+.offlineSub   { font-size: 11px; color: var(--muted); margin-top: 2px; }

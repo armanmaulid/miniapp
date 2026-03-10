@@ -4,37 +4,33 @@ import s from './History.module.css';
 
 const PERIODS = ['Today', 'Week', 'Month', 'All'];
 
-// ── Period boundary (unix seconds) ───────────────────────────────────
 function periodStart(period) {
   const now = new Date();
   if (period === 'Today')
     return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
   if (period === 'Week') {
-    const diff = (now.getDay() + 6) % 7; // Mon = 0
+    const diff = (now.getDay() + 6) % 7;
     return new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff).getTime() / 1000;
   }
   if (period === 'Month')
     return new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000;
-  return 0; // All
+  return 0;
 }
 
-// ── Compute stats from filtered trade array ───────────────────────────
 function computeStats(trades) {
   let wins = 0, losses = 0, grossWin = 0, grossLoss = 0, net = 0;
   let best = 0, streak = 0;
-
   for (const t of trades) {
     const p = t.profit ?? 0;
     net += p;
     if (p >= 0) {
-      wins++;   grossWin  += p;  if (p > best) best = p;
+      wins++; grossWin += p; if (p > best) best = p;
       streak = streak >= 0 ? streak + 1 : 1;
     } else {
       losses++; grossLoss += Math.abs(p);
       streak = streak <= 0 ? streak - 1 : -1;
     }
   }
-
   const total = wins + losses;
   return {
     total, wins, losses,
@@ -49,17 +45,37 @@ function computeStats(trades) {
   };
 }
 
+// ── #8 CSV Export ─────────────────────────────────────────────────────
+function exportCSV(trades, period) {
+  const header = 'Ticket,Symbol,Direction,Lots,Close Reason,Close Time,Profit\n';
+  const rows = trades.map(t => [
+    t.ticket,
+    t.symbol,
+    t.dir,
+    t.lots,
+    t.closeReason,
+    t.closeTime ? new Date(t.closeTime * 1000).toISOString() : '',
+    t.profit?.toFixed(2) ?? 0,
+  ].join(',')).join('\n');
+
+  const blob = new Blob([header + rows], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `trades_${period}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function History() {
   const { activeState: d, activeHistory: trades } = useApp();
   const [period, setPeriod] = useState('All');
 
-  // ── Filter trades by period ───────────────────────────────────────
   const filtered = useMemo(() => {
     const since = periodStart(period);
     return since === 0 ? trades : trades.filter(t => (t.closeTime ?? 0) >= since);
   }, [trades, period]);
 
-  // ── Recompute all stats from filtered list ────────────────────────
   const st = useMemo(() => computeStats(filtered), [filtered]);
   const streakUp = st.currentStreak >= 0;
 
@@ -70,6 +86,13 @@ export default function History() {
           <div className={s.title}>History</div>
           <div className={s.sub}>{period === 'All' ? 'All trades' : period} · {d?.symbol ?? '—'}</div>
         </div>
+        {/* #8 CSV export button */}
+        {filtered.length > 0 && (
+          <button className={s.exportBtn} onClick={() => exportCSV(filtered, period)}
+                  title="Export CSV">
+            ⬇ CSV
+          </button>
+        )}
       </div>
 
       {/* Period filter */}
@@ -80,7 +103,7 @@ export default function History() {
         ))}
       </div>
 
-      {/* Winrate card — recomputed from filtered trades */}
+      {/* Winrate card */}
       <div className={`card ${s.wrCard}`}>
         <div className={s.wrTop}>
           <div className={s.wrPct}>{st.winRate.toFixed(1)}%</div>
@@ -109,7 +132,7 @@ export default function History() {
         </div>
       </div>
 
-      {/* 2x2 summary — from filtered trades */}
+      {/* 2x2 summary */}
       <div className={s.grid2}>
         {[
           { lbl: 'Avg Win',    val: st.avgWin  > 0 ? '+$' + st.avgWin.toFixed(2)  : '—', cls: 'green', sub: 'per trade' },
@@ -125,7 +148,7 @@ export default function History() {
         ))}
       </div>
 
-      {/* Trade list — filtered */}
+      {/* Trade list */}
       <div className="section-title">
         {filtered.length} Trade{filtered.length !== 1 ? 's' : ''} · {period}
       </div>

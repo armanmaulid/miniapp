@@ -20,3 +20,16 @@
 .btn:active { transform:scale(.96); }
 .cancel  { background:var(--card2);color:var(--muted); }
 .confirm { background:var(--green);color:#000; }
+
+.inputErr {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 2px rgba(255,70,70,0.15);
+}
+
+.errMsg {
+  color: var(--red);
+  font-size: 11px;
+  margin-top: -8px;
+  margin-bottom: 4px;
+  padding: 0 2px;
+}
