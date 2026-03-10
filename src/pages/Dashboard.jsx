@@ -33,11 +33,7 @@ export default function Dashboard() {
           <div className={`pill ${d.online !== false ? 'pill-green' : 'pill-muted'}`}>
             {d.online !== false ? '● LIVE' : '● OFFLINE'}
           </div>
-          {/* #6 — Theme toggle */}
-          <button className={s.themeBtn} onClick={actions.toggleTheme}
-                  title="Toggle dark/light mode">
-            {state.theme === 'dark' ? '☀️' : '🌙'}
-          </button>
+
         </div>
       </div>
 
@@ -121,68 +117,107 @@ export default function Dashboard() {
   );
 }
 
-// ── #5 Position Detail ────────────────────────────────────────────────
+// ── Position & Order Detail Cards ────────────────────────────────────
 function PositionDetail({ d }) {
-  const floatPnL  = d.floatPnL  ?? 0;
-  const openPos   = d.openPositions  ?? 0;
-  const pending   = d.pendingOrders  ?? 0;
+  const floatPnL = d.floatPnL ?? 0;
+  const positions = d.positions ?? [];  // array dari WebPush
+  const orders    = d.orders    ?? [];
 
-  const rows = [];
-
-  if (openPos > 0) {
-    rows.push({
-      icon:  floatPnL >= 0 ? '📈' : '📉',
-      label: `${openPos} Position${openPos > 1 ? 's' : ''}`,
-      sub:   d.symbol,
-      val:   (floatPnL >= 0 ? '+' : '') + '$' + Math.abs(floatPnL).toFixed(2),
-      cls:   floatPnL >= 0 ? 'up' : 'down',
-    });
-  }
-
-  if (pending > 0) {
-    rows.push({
-      icon:  '⏳',
-      label: `${pending} Pending Order${pending > 1 ? 's' : ''}`,
-      sub:   d.symbol + ' · waiting entry',
-      val:   '—',
-      cls:   'flat',
-    });
-  }
+  // Fallback: jika array belum ada (EA lama), tampilkan summary saja
+  const hasDetail = positions.length > 0 || orders.length > 0;
 
   return (
     <div className={s.posCards}>
-      {rows.map(r => (
-        <div key={r.label} className={`card card-sm ${s.posRow}`}>
-          <div className={s.posIcon}>{r.icon}</div>
-          <div className={s.posInfo}>
-            <div className={s.posLabel}>{r.label}</div>
-            <div className={s.posSub}>{r.sub}</div>
+
+      {/* Open Positions — per posisi dengan Entry/SL/TP */}
+      {positions.map(pos => (
+        <div key={pos.ticket} className={`card ${s.posCard}`}>
+          <div className={s.posCardTop}>
+            <span className={`${s.posDirBadge} ${pos.dir === 'BUY' ? s.buy : s.sell}`}>
+              {pos.dir}
+            </span>
+            <span className="muted" style={{ fontSize: 11 }}>#{pos.ticket}</span>
+            <span className="muted" style={{ fontSize: 11 }}>{pos.lots} lots</span>
+            <span className={`mono ${pos.profit >= 0 ? 'green' : 'red'}`}
+                  style={{ marginLeft: 'auto', fontWeight: 700, fontSize: 13 }}>
+              {pos.profit >= 0 ? '+' : ''}${pos.profit.toFixed(2)}
+            </span>
           </div>
-          <div className={`${s.posVal} ${r.cls}`}>{r.val}</div>
+          <div className={s.posLevels}>
+            <PriceRow lbl="Entry" val={pos.entry} cls="white" />
+            <PriceRow lbl="SL"    val={pos.sl}    cls="red"   />
+            <PriceRow lbl="TP"    val={pos.tp}    cls="green" />
+          </div>
         </div>
       ))}
 
-      {/* Equity summary bar */}
-      <div className={`card ${s.eqBar}`}>
-        <div className={s.eqRow}>
-          <span className="muted" style={{ fontSize: 11 }}>Balance</span>
-          <span className="mono white" style={{ fontSize: 13, fontWeight: 700 }}>
-            ${d.balance?.toFixed(2) ?? '—'}
-          </span>
+      {/* Pending Orders — per order dengan Entry/SL/TP */}
+      {orders.map(ord => (
+        <div key={ord.ticket} className={`card ${s.posCard}`}>
+          <div className={s.posCardTop}>
+            <span className={`${s.posDirBadge} ${ord.dir === 'BUY' ? s.buy : s.sell} ${s.pending}`}>
+              {ord.dir} STOP
+            </span>
+            <span className="muted" style={{ fontSize: 11 }}>#{ord.ticket}</span>
+            <span className="muted" style={{ fontSize: 11 }}>{ord.lots} lots</span>
+            <span className="amber mono" style={{ marginLeft: 'auto', fontSize: 11 }}>⏳ pending</span>
+          </div>
+          <div className={s.posLevels}>
+            <PriceRow lbl="Entry" val={ord.entry} cls="white" />
+            <PriceRow lbl="SL"    val={ord.sl}    cls="red"   />
+            <PriceRow lbl="TP"    val={ord.tp}    cls="green" />
+          </div>
         </div>
-        <div className={s.eqRow}>
-          <span className="muted" style={{ fontSize: 11 }}>Equity</span>
-          <span className={`mono ${floatPnL >= 0 ? 'green' : 'red'}`} style={{ fontSize: 13, fontWeight: 700 }}>
-            ${d.equity?.toFixed(2) ?? '—'}
-          </span>
+      ))}
+
+      {/* Fallback summary jika EA belum push array (EA lama) */}
+      {!hasDetail && (
+        <div className={`card ${s.eqBar}`}>
+          <div className={s.eqRow}>
+            <span className="muted" style={{ fontSize: 11 }}>Open Positions</span>
+            <span className="mono white" style={{ fontSize: 13, fontWeight: 700 }}>{d.openPositions}</span>
+          </div>
+          <div className={s.eqRow}>
+            <span className="muted" style={{ fontSize: 11 }}>Pending Orders</span>
+            <span className="mono amber" style={{ fontSize: 13, fontWeight: 700 }}>{d.pendingOrders}</span>
+          </div>
+          <div className={s.eqRow}>
+            <span className="muted" style={{ fontSize: 11 }}>Float P&L</span>
+            <span className={`mono ${floatPnL >= 0 ? 'green' : 'red'}`} style={{ fontSize: 13, fontWeight: 700 }}>
+              {(floatPnL >= 0 ? '+' : '')}${Math.abs(floatPnL).toFixed(2)}
+            </span>
+          </div>
         </div>
-        <div className={s.eqRow}>
-          <span className="muted" style={{ fontSize: 11 }}>Float P&L</span>
-          <span className={`mono ${floatPnL >= 0 ? 'green' : 'red'}`} style={{ fontSize: 13, fontWeight: 700 }}>
-            {(floatPnL >= 0 ? '+' : '')}${Math.abs(floatPnL).toFixed(2)}
-          </span>
+      )}
+
+      {/* Float P&L summary bar (selalu tampil jika ada posisi terbuka) */}
+      {positions.length > 0 && (
+        <div className={`card ${s.eqBar}`}>
+          <div className={s.eqRow}>
+            <span className="muted" style={{ fontSize: 11 }}>Float P&L</span>
+            <span className={`mono ${floatPnL >= 0 ? 'green' : 'red'}`}
+                  style={{ fontSize: 14, fontWeight: 700 }}>
+              {(floatPnL >= 0 ? '+' : '')}${Math.abs(floatPnL).toFixed(2)}
+            </span>
+          </div>
+          <div className={s.eqRow}>
+            <span className="muted" style={{ fontSize: 11 }}>Equity</span>
+            <span className="mono white" style={{ fontSize: 13 }}>
+              ${d.equity?.toFixed(2) ?? '—'}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
+    </div>
+  );
+}
+
+function PriceRow({ lbl, val, cls }) {
+  const display = (!val || val === 0) ? '—' : val.toFixed ? val.toFixed(5) : val;
+  return (
+    <div className={s.priceRow}>
+      <span className={s.priceLbl}>{lbl}</span>
+      <span className={`mono ${cls} ${s.priceVal}`}>{display}</span>
     </div>
   );
 }

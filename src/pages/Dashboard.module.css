@@ -84,3 +84,23 @@
 
 .eqBar  { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; }
 .eqRow  { display: flex; justify-content: space-between; align-items: center; }
+
+/* Position detail cards */
+.posCard    { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.posCardTop { display: flex; align-items: center; gap: 8px; }
+.posDirBadge {
+  font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: 6px; font-family: var(--font-mono);
+}
+.buy     { background: rgba(0,232,122,0.15); color: var(--green); }
+.sell    { background: rgba(255,59,92,0.15);  color: var(--red); }
+.pending { opacity: 0.75; }
+
+.posLevels { display: flex; gap: 0; flex-direction: column; }
+.priceRow  {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; border-bottom: 1px solid var(--border);
+}
+.priceRow:last-child { border-bottom: none; }
+.priceLbl  { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.priceVal  { font-size: 12px; font-weight: 600; }

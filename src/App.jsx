@@ -15,10 +15,10 @@ function Inner() {
   const { colorScheme } = useTelegram();
   const [page, setPage] = useState('dashboard');
 
-  // Sync Telegram color scheme → CSS theme
+  // Force dark theme always
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', colorScheme);
-  }, [colorScheme]);
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   const PAGES = { dashboard: Dashboard, control: Control, params: Params, history: History };
   const Page  = PAGES[page];
@@ -32,13 +32,7 @@ function Inner() {
           <div className={s.topName}>iOT EA Dashboard</div>
           <div className={s.topSub}>Mini App · @ManksEA_bot</div>
         </div>
-        <button className={s.themeBtn}
-          onClick={() => {
-            const cur = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', cur==='dark'?'light':'dark');
-          }}>
-          {colorScheme === 'dark' ? '🌙' : '☀️'}
-        </button>
+
       </div>
 
       {/* Pair switcher bar */}

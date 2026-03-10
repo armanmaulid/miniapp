@@ -30,7 +30,7 @@
 }
 
 /* ── Dark Theme (default) ───────────────────────────────── */
-[data-theme="dark"], :root {
+:root {
   --bg:       #080c10;
   --surface:  #0d1520;
   --card:     #111d2b;
@@ -44,20 +44,7 @@
   --shadow:   rgba(0, 0, 0, 0.5);
 }
 
-/* ── Light Theme ─────────────────────────────────────────── */
-[data-theme="light"] {
-  --bg:       #f0f4f8;
-  --surface:  #ffffff;
-  --card:     #ffffff;
-  --card2:    #f4f7fa;
-  --border:   #dde5ee;
-  --border2:  #c0cede;
-  --text:     #2a3a4a;
-  --muted:    #7090a8;
-  --muted2:   #a8bece;
-  --white:    #0a1a2a;
-  --shadow:   rgba(0, 0, 0, 0.10);
-}
+/* Light theme removed — dark only */
 
 /* ── Global Reset ─────────────────────────────────────────── */
 *, *::before, *::after {
