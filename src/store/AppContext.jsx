@@ -23,8 +23,15 @@ const INIT = {
 // ── Reducer ─────────────────────────────────────────────────────────
 function reducer(state, action) {
   switch (action.type) {
-    case 'SET_INSTANCES':
-      return { ...state, instances: action.payload };
+    case 'SET_INSTANCES': {
+      const instances = action.payload;
+      let activePair = state.activePair;
+      if (!activePair && instances.length > 0) {
+        const first = instances[0];
+        activePair = `${first.magic}:${first.symbol}`;
+      }
+      return { ...state, instances, activePair };
+    }
 
     case 'SET_STATE': {
       const { id, data, eqHistory } = action.payload;
@@ -83,14 +90,10 @@ export function AppProvider({ children }) {
     try {
       const { instances } = await fetchInstances();
       dispatch({ type: 'SET_INSTANCES', payload: instances });
-      if (!state.activePair && instances.length > 0) {
-        const first = instances[0];
-        dispatch({ type: 'SET_ACTIVE_PAIR', payload: pairId(first.magic, first.symbol) });
-      }
     } catch (e) {
       console.warn('fetchInstances:', e.message);
     }
-  }, [state.activePair]);
+  }, []);
 
   // ── Poll active pair state ──────────────────────────────────────────
   const pollActive = useCallback(async () => {
